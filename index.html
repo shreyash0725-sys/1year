@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>For My LOML 🫶🏻</title>
+  <!-- Cute & Romantic Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Fredoka:wght@400;600;700&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Fredoka', 'Nunito', sans-serif;
+      background: linear-gradient(135deg, #fff0f5 0%, #ffe4e1 50%, #ffd1dc 100%);
+      color: #4a3e3d;
+    }
+
+    .page {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 25px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.8s ease-in-out, visibility 0.8s ease-in-out;
+      z-index: 1;
+    }
+
+    .page.active {
+      opacity: 1;
+      visibility: visible;
+      z-index: 2;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      margin-bottom: 12px;
+      color: #333;
+    }
+    p {
+      font-size: 1.25rem;
+      line-height: 1.6;
+      color: #555;
+    }
+    .highlight-red {
+      color: #ff2a5f;
+      font-weight: 700;
+      text-shadow: 0 2px 10px rgba(255,42,95,0.2);
+    }
+    .subtext {
+      font-size: 1rem;
+      color: #777;
+      margin-top: 8px;
+    }
+
+    .btn-next {
+      margin-top: 25px;
+      padding: 12px 32px;
+      background: linear-gradient(135deg, #ff6b8b, #ff4757);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      font-family: 'Fredoka', sans-serif;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(255, 71, 87, 0.35);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-next:active {
+      transform: scale(0.95);
+    }
+
+    /* PAGE 3: PASSWORD */
+    .pin-display {
+      display: flex;
+      gap: 15px;
+      margin: 25px 0;
+    }
+    .pin-dot {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid #ff4757;
+      background: transparent;
+      transition: background 0.2s;
+    }
+    .pin-dot.filled {
+      background: #ff4757;
+      box-shadow: 0 0 10px #ff4757;
+    }
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      max-width: 280px;
+      width: 100%;
+    }
+    .key-btn {
+      padding: 16px;
+      font-size: 1.4rem;
+      font-weight: bold;
+      background: white;
+      border: 2px solid #ffd1dc;
+      border-radius: 50%;
+      width: 65px;
+      height: 65px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      transition: all 0.15s;
+    }
+    .key-btn:active {
+      background: #ffe4e1;
+      transform: scale(0.9);
+    }
+    .key-btn.clear {
+      font-size: 0.9rem;
+      border-radius: 20px;
+      width: 100%;
+      grid-column: span 3;
+      height: 45px;
+      margin-top: 5px;
+      background: #fff0f5;
+      color: #ff4757;
+    }
+
+    /* PAGE 4: CANNON GAME */
+    #cannon-canvas {
+      width: 100%;
+      max-width: 450px;
+      height: 320px;
+      background: rgba(255, 255, 255, 0.4);
+      border-radius: 20px;
+      border: 2px dashed #ffb6c1;
+    }
+    .reveal-msg-container {
+      margin-top: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .fade-line {
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.8s ease;
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #d63031;
+    }
+    .fade-line.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* PAGE 7: LETTER STACK */
+    .letters-bg-canvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+    }
+    .letter-grid {
+      position: absolute;
+      top: 20px;
+      left: 15px; right: 15px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      z-index: 5;
+    }
+    .mini-letter {
+      width: 45px;
+      height: 32px;
+      background: #ff7675;
+      color: white;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+      animation: popIn 0.4s ease;
+    }
+    .letter-pile {
+      position: relative;
+      width: 220px;
+      height: 150px;
+      cursor: pointer;
+      margin: 40px auto 20px;
+    }
+    .stacked-envelope {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      border: 2px solid rgba(255,255,255,0.6);
+    }
+    .letter-modal {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s;
+    }
+    .letter-modal.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .letter-paper {
+      width: 85%;
+      max-width: 360px;
+      background: #fffdf9;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      font-family: 'Caveat', cursive;
+      font-size: 1.6rem;
+      color: #2d3436;
+      transform: scale(0.7);
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      text-align: center;
+      border: 2px stroke #ffeaa7;
+    }
+    .letter-modal.active .letter-paper {
+      transform: scale(1);
+    }
+
+    /* PAGE 8: EMOJI MORPH */
+    .emoji-morph {
+      font-size: 5rem;
+      margin: 25px 0;
+      display: inline-block;
+      animation: morphAnim 3s infinite ease-in-out alternate;
+    }
+    @keyframes morphAnim {
+      0% { transform: scale(1) rotate(0deg); }
+      50% { transform: scale(1.2) rotate(10deg); }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+
+    /* PAGE 9: HEARTS SPLASH */
+    .hearts-container {
+      display: flex;
+      gap: 25px;
+      margin: 30px 0;
+    }
+    .tap-heart {
+      font-size: 3.5rem;
+      color: #ccc;
+      cursor: pointer;
+      transition: transform 0.3s, color 0.3s;
+    }
+    .tap-heart.active-heart {
+      color: #ff4757;
+      transform: scale(1.25);
+      animation: heartPulse 0.8s infinite alternate;
+    }
+    @keyframes heartPulse {
+      0% { transform: scale(1.15); }
+      100% { transform: scale(1.3); }
+    }
+    #splash-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: #ff4757;
+      z-index: 90;
+      clip-path: circle(0% at 50% 50%);
+      transition: clip-path 1.2s ease-in-out;
+      pointer-events: none;
+    }
+    #splash-overlay.splashed {
+      clip-path: circle(150% at 50% 50%);
+    }
+
+    /* PAGE 10: CONNECT DOTS */
+    #dots-canvas {
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(255, 182, 193, 0.4);
+      touch-action: none;
+      border: 3px solid #ffccd5;
+    }
+
+    /* PAGE 11: PUZZLE */
+    .puzzle-area {
+      position: relative;
+      width: 280px;
+      height: 260px;
+      margin: 25px auto;
+    }
+    .puzzle-heart-bg {
+      width: 100%;
+      height: 100%;
+    }
+    .draggable-piece {
+      position: absolute;
+      width: 70px;
+      height: 70px;
+      bottom: -40px;
+      right: -10px;
+      background: #ff4757;
+      color: white;
+      font-size: 1rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50% 50% 0 50%;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+      cursor: grab;
+      touch-action: none;
+      z-index: 10;
+      transition: box-shadow 0.2s;
+    }
+
+    /* PAGE 13: DARK ROOM & TORCH */
+    #page13 {
+      background: #000;
+      overflow: hidden;
+    }
+    .dark-mask {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: radial-gradient(circle 90px at var(--x, 50%) var(--y, 50%), transparent 0%, rgba(0, 0, 0, 0.98) 100%);
+      pointer-events: none;
+      z-index: 10;
+      transition: opacity 1s ease;
+    }
+    .room-container {
+      position: relative;
+      width: 100%;
+      max-width: 400px;
+      height: 480px;
+      background: #2b1d19;
+      border-radius: 15px;
+      border: 4px solid #4a332d;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 20px;
+      box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
+    }
+    .light-switch {
+      width: 45px;
+      height: 65px;
+      background: #e0e0e0;
+      border-radius: 8px;
+      margin-left: auto;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 5px;
+      box-shadow: 0 0 10px rgba(255,255,255,0.2);
+    }
+    .switch-toggle {
+      width: 20px;
+      height: 25px;
+      background: #999;
+      border-radius: 4px;
+      transition: transform 0.2s, background 0.2s;
+    }
+    .light-switch.on .switch-toggle {
+      transform: translateY(-8px);
+      background: #fffae6;
+      box-shadow: 0 0 12px #ffd700;
+    }
+    .study-table {
+      width: 100%;
+      height: 180px;
+      background: #8b5a2b;
+      border-radius: 12px;
+      position: relative;
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-end;
+      padding: 15px;
+      box-shadow: inset 0 10px 20px rgba(0,0,0,0.3);
+    }
+    .drawer {
+      width: 110px;
+      height: 70px;
+      background: #6f4721;
+      border: 2px solid #543518;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #ffd700;
+      font-size: 0.85rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+    }
+    .parcel-box {
+      width: 130px;
+      height: 90px;
+      background: #d2b48c;
+      border: 2px solid #8b5a2b;
+      border-radius: 8px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+      animation: pulseGlow 1.5s infinite alternate;
+    }
+    .tape-strip {
+      position: absolute;
+      width: 100%;
+      height: 18px;
+      background: rgba(255,235,170,0.7);
+      transform: rotate(-10deg);
+      transition: opacity 0.5s;
+    }
+
+    /* PAGE 15: FLOWERS & CHEERS */
+    .flower {
+      position: absolute;
+      font-size: 2.5rem;
+      animation: bloom 2s ease-out forwards;
+    }
+    @keyframes bloom {
+      0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+
+    /* CHAT SCREENSHOT RECREATION (IMAGE 3) */
+    .chat-card {
+      width: 100%;
+      max-width: 340px;
+      background: #0b141a;
+      border-radius: 18px;
+      padding: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      color: white;
+      text-align: left;
+      font-family: 'Nunito', sans-serif;
+      border: 1px solid #222d34;
+    }
+    .chat-bubble {
+      max-width: 80%;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      position: relative;
+      line-height: 1.4;
+    }
+    .chat-in {
+      background: #202c33;
+      align-self: flex-start;
+      border-top-left-radius: 0;
+    }
+    .chat-out {
+      background: #005c4b;
+      align-self: flex-end;
+      border-top-right-radius: 0;
+    }
+    .chat-time {
+      font-size: 0.65rem;
+      color: #8696a0;
+      float: right;
+      margin-top: 4px;
+      margin-left: 8px;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SPLASH OVERLAY FOR PAGE 9 -->
+  <div id="splash-overlay"></div>
+
+  <!-- PAGE 1 -->
+  <div class="page active" id="page1" onclick="goToPage(2)">
+    <h1>For the <span class="highlight-red">LOML</span> 🫶🏻</h1>
+    <p class="subtext">Made by thale nov 😁</p>
+    <p style="margin-top: 40px; font-size: 0.85rem; color: #a0888d;">(Tap anywhere on screen to continue ✨)</p>
+  </div>
+
+  <!-- PAGE 2 -->
+  <div class="page" id="page2" onclick="goToPage(3)">
+    <h1>Hope you love it 🥰</h1>
+  </div>
+
+  <!-- PAGE 3: PASSWORD -->
+  <div class="page" id="page3">
+    <h1>Password enter karo meri jaan 😘</h1>
+    <div class="pin-display">
+      <div class="pin-dot" id="dot-0"></div>
+      <div class="pin-dot" id="dot-1"></div>
+      <div class="pin-dot" id="dot-2"></div>
+      <div class="pin-dot" id="dot-3"></div>
+    </div>
+    <div class="keypad">
+      <button class="key-btn" onclick="pressKey('1')">1</button>
+      <button class="key-btn" onclick="pressKey('2')">2</button>
+      <button class="key-btn" onclick="pressKey('3')">3</button>
+      <button class="key-btn" onclick="pressKey('4')">4</button>
+      <button class="key-btn" onclick="pressKey('5')">5</button>
+      <button class="key-btn" onclick="pressKey('6')">6</button>
+      <button class="key-btn" onclick="pressKey('7')">7</button>
+      <button class="key-btn" onclick="pressKey('8')">8</button>
+      <button class="key-btn" onclick="pressKey('9')">9</button>
+      <button class="key-btn" onclick="pressKey('0')">0</button>
+      <button class="key-btn clear" onclick="clearKey()">CLEAR</button>
+    </div>
+  </div>
+
+  <!-- PAGE 4: CANNON & WALLS -->
+  <div class="page" id="page4">
+    <h2 style="margin-bottom: 10px;">Aim & Break the Walls! 🎯</h2>
+    <canvas id="cannon-canvas" width="400" height="300"></canvas>
+    <button class="btn-next" id="fire-btn" onclick="fireCannon()" style="margin-top: 10px;">FIREE!! 🚀</button>
+    <div class="reveal-msg-container" id="reveal-lines">
+      <div class="fade-line" id="line-1">EVERYDAY,</div>
+      <div class="fade-line" id="line-2">EVERY NIGHT,</div>
+      <div class="fade-line" id="line-3">EVERYTIME</div>
+      <div class="fade-line" id="line-4" style="font-size: 1.5rem; color: #ff2a5f;">I always love you stuti ❤️</div>
+    </div>
+  </div>
+
+  <!-- PAGE 5 -->
+  <div class="page" id="page5" onclick="goToPage(6)">
+    <p style="font-size: 1.4rem; max-width: 380px;">
+      "365 days later, and you're still my favorite part of every single day. I’d choose you all over again in a heartbeat."
+    </p>
+  </div>
+
+  <!-- PAGE 6 -->
+  <div class="page" id="page6">
+    <h1>Can I renew your subscription for another 60 years🥹🥹🥹</h1>
+    <p class="subtext" style="font-size: 1.2rem; color: #ff4757; font-weight: bold;">PlsPlsPlsPlsPls</p>
+    <button class="btn-next" onclick="goToPage(7)">Next ➔</button>
+  </div>
+
+  <!-- PAGE 7: LETTERS -->
+  <div class="page" id="page7">
+    <canvas class="letters-bg-canvas" id="falling-letters-canvas"></canvas>
+    <div class="letter-grid" id="letter-grid"></div>
+    <h2 style="margin-top: 50px;">You have letters for you 💌</h2>
+    
+    <div class="letter-pile" onclick="openTopLetter()">
+      <div class="stacked-envelope" style="background: #ff7675; transform: rotate(-6deg) translateY(0px);">💌</div>
+      <div class="stacked-envelope" style="background: #74b9ff; transform: rotate(4deg) translateY(-5px);">✉️</div>
+      <div class="stacked-envelope" style="background: #a29bfe; transform: rotate(-3deg) translateY(-10px);">💌</div>
+      <div class="stacked-envelope" style="background: #fd79a8; transform: rotate(5deg) translateY(-15px);">💖</div>
+    </div>
+
+    <div id="letter-actions" style="display: none; gap: 15px; margin-top: 20px;">
+      <button class="btn-next" style="background: #74b9ff;" onclick="resetLetters()">Read Again 🔄</button>
+      <button class="btn-next" onclick="goToPage(8)">Continue ➔</button>
+    </div>
+
+    <!-- Letter Popup Modal -->
+    <div class="letter-modal" id="letter-modal" onclick="closeLetter()">
+      <div class="letter-paper" id="letter-paper-text"></div>
+    </div>
+  </div>
+
+  <!-- PAGE 8 -->
+  <div class="page" id="page8">
+    <p style="font-size: 1.2rem; max-width: 400px; text-align: left; line-height: 1.7;">
+      "The whole world may look at you as an adult but I'll always look at you as my baby. People expect you to be tough but you'll always be allowed to be soft with me. I'll always protect your inner child. Be your carefree self with me fuck the world who cares. We'll be kids together."
+    </p>
+    <div class="emoji-morph" id="emoji-morph">😁</div>
+    <button class="btn-next" onclick="goToPage(9)">Next ➔</button>
+  </div>
+
+  <!-- PAGE 9: THREE HEARTS -->
+  <div class="page" id="page9">
+    <h1>You fill my HEART ❤️</h1>
+    <div class="hearts-container">
+      <span class="tap-heart" onclick="fillHeart(0)">♥</span>
+      <span class="tap-heart" onclick="fillHeart(1)">♥</span>
+      <span class="tap-heart" onclick="fillHeart(2)">♥</span>
+    </div>
+  </div>
+
+  <!-- PAGE 10: CONNECT THE DOTS -->
+  <div class="page" id="page10">
+    <h2 style="margin-bottom: 10px;">Connect the Dots ✨</h2>
+    <canvas id="dots-canvas" width="340" height="380"></canvas>
+    <button class="btn-next" id="dots-next-btn" style="display: none; margin-top: 15px;" onclick="goToPage(11)">Next ➔</button>
+  </div>
+
+  <!-- PAGE 11: PUZZLE HEART -->
+  <div class="page" id="page11">
+    <h1>ME</h1>
+    <div class="puzzle-area" id="puzzle-area">
+      <svg class="puzzle-heart-bg" viewBox="0 0 100 100">
+        <path id="main-heart-path" d="M 50,30 A 20,20 0 0,0 20,50 C 20,70 50,90 50,90 C 50,90 80,70 80,50 A 20,20 0 0,0 50,30 Z" 
+              fill="#ffccd5" stroke="#ff4757" stroke-width="2" stroke-dasharray="4"/>
+      </svg>
+      <div class="draggable-piece" id="drag-piece">YOU</div>
+    </div>
+    <p id="puzzle-success-msg" style="opacity: 0; transition: opacity 0.8s; font-size: 1.2rem; color: #ff2a5f; margin-top: 10px;">
+      You complete me 🫶🏻😁 and heal me 😻😽
+    </p>
+    <button class="btn-next" id="puzzle-next-btn" style="display: none; margin-top: 15px;" onclick="goToPage(12)">Next ➔</button>
+  </div>
+
+  <!-- PAGE 12 -->
+  <div class="page" id="page12">
+    <p style="font-size: 1.15rem; max-width: 380px; text-align: left; line-height: 1.6;">
+      "Not a single day passes by without me missing you. All I'll ever want is to hug you and cuddle with you, telling you how much I love you, hearing you telling me how much I love you. I wanna spend time with youuuuu aloneee like no one should be there. Just us. Fuck everyone else. I wanna stroke your hair hold your cheeks. Kiss you 😭😭😭😭😭😭😭😭."
+    </p>
+    <button class="btn-next" onclick="goToPage(13)">Next ➔</button>
+  </div>
+
+  <!-- PAGE 13: DARK ROOM TORCH -->
+  <div class="page" id="page13">
+    <div class="dark-mask" id="dark-mask"></div>
+    <div class="room-container">
+      <div class="light-switch" id="room-switch" onclick="toggleRoomLight()">
+        <div class="switch-toggle"></div>
+      </div>
+      <div class="study-table">
+        <div class="drawer" onclick="openDrawer()">
+          Drawer 📁
+        </div>
+        <div class="parcel-box" id="parcel" style="display: none;" onclick="openParcel()">
+          <div class="tape-strip" id="tape"></div>
+          📦 Parcel
+        </div>
+      </div>
+    </div>
+    <button class="btn-next" id="p13-next-btn" style="display: none; position: absolute; botto
